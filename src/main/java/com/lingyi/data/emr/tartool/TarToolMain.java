@@ -89,38 +89,4 @@ public class TarToolMain {
     }
 }
 
-/*
 
-spark-submit \
-    --class com.lingyi.data.emr.tartool.TarToolMain \
-    --master yarn  \
-    --deploy-mode client \
-    /home/work/douyonghou/spark-tar/spark-tar-tool-1.0-SNAPSHOT.jar tos://report/spark_data/tmp/tar/ tos://report/spark_data/out/tar3/
-
-spark-submit \
-    --jars /home/work/douyonghou/spark-tar/lib/ant-1.10.14.jar \
-    --class com.lingyi.data.emr.tartool.TarToolMain \
-    --master local[*]  \
-    /home/work/douyonghou/spark-tar/spark-tar-tool-1.0-SNAPSHOT.jar tos://report/spark_data/tmp/tar/ tos://report/spark_data/out/tar2/
-
-spark-submit \
-    --files /home/work/douyonghou/spark-tar/config/produce.properties \
-    --jars /home/work/douyonghou/spark-tar/lib/ant-1.10.14.jar \
-    --class com.lingyi.data.emr.tartool.TarToolMain \
-    --master yarn  \
-    --deploy-mode cluster \
-    /home/work/douyonghou/spark-tar/spark-tar-tool-1.0-SNAPSHOT.jar tos://report/spark_data/tmp/tar/ tos://report/spark_data/out/tar10/
-
-hadoop fs -ls tos://report/spark_data/tmp/
-
-hadoop fs -rmr tos://report/spark_data/tmp/tar/*
-hadoop fs -put /home/work/douyonghou/*.* tos://report/spark_data/tmp/tar/
-sparktar -cluster tos://report/spark_data/tmp/tar/ 1.produce.properties
-sparktar -client tos://report/spark_data/tmp/tar/ 1.produce.properties
-sparktar -local tos://report/spark_data/tmp/tar/ 1.produce.properties
-
-hadoop fs -ls tos://report/spark_data/tmp/tar/*
-
-spark-submit --files .config/1.produce.properties --class com.lingyi.data.emr.tartool.TarToolMain --master 'local[*]' ./spark-tar-tool-1.0-SNAPSHOT.jar tos://report/spark_data/tmp/tar/ tos://report/spark_data/tmp/tar/out/local/ 1.produce.properties
-
-*/
