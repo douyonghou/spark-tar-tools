@@ -34,7 +34,7 @@ public class TarPlug {
                 System.out.println(e.getMessage());
             }
             new TarArchive(this.path, this.pds).unZip();
-        }else if (this.pds.getPath().endsWith(".gz")) {
+        } else if (this.pds.getPath().endsWith(".gz")) {
             System.out.println("解压gzip格式: " + this.path);
             try {
                 this.path = this.path.substring(0, this.path.indexOf(".gz"));
@@ -42,7 +42,7 @@ public class TarPlug {
                 System.out.println(e.getMessage());
             }
             new TarArchive(this.path, this.pds).unGzip();
-        }else if (this.pds.getPath().endsWith(".tar")) {
+        } else if (this.pds.getPath().endsWith(".tar")) {
             System.out.println("解压tar格式: " + this.path);
             try {
                 this.path = this.path.substring(0, path.indexOf(".tar"));
@@ -50,6 +50,6 @@ public class TarPlug {
                 System.out.println(e.getMessage());
             }
             new TarArchive(this.path, this.pds).unTar();
-        }else System.out.println("该格式目前不支持，只支持tar/gz/zip压缩格式");
+        } else System.out.println("该格式目前不支持，只支持tar/gz/zip压缩格式");
     }
 }

@@ -28,13 +28,21 @@ sparktar 提交方式 解压路径 [解压输出路径] 配置文件
 4.1.yarn-cluster模式，将tos://report/tmp/下的压缩包，解压到当前路径
 第一步：在/bin/spark-tar/config路径下编写配置文件
 vim /bin/spark-tar/config/tmp.produce.properties
+
 # spark.driver内存
+
 spark.driver.memory=2g
+
 # spark.executor的核数,官网推荐4~5个
+
 spark.executor.cores=4
+
 # spark.executor内存,大概1个yarn节点总内存/excuter数,具体还需要结合job的数据集以及划分并行度情况设定
+
 spark.executor.memory=4g
+
 # 对外内存
+
 spark.yarn.executor.memoryOverhead=1g
 
 第二步：执行解压命令
@@ -44,3 +52,12 @@ sparktar -cluster tos://report/tmptar/ tmp.produce.properties
 sparktar -cluster tos://report/tmptar/ tos://report/cluster_out/ tmp.produce.properties
 spark代码已提交到飞连git仓库，访问地址：https://code.lingyiwanwu.net/douyonghou/spark-tar-tool
 sparktar -cluster tos://report/tmptar/ tos://report/cluster_out/ tmp.produce.properties
+
+spark-submit \
+--class com.lingyi.data.emr.tartool.util.SevenZByte \
+./spark-tar-tool-1.1-SNAPSHOT.jar "file:///home/work/douyonghou/typora_64bit_v1.4.8_setup.7z"
+
+
+hadoop jar ./spark-tar-tool-1.1-SNAPSHOT.jar "file:///home/work/douyonghou/typora_64bit_v1.4.8_setup.7z"
+
+

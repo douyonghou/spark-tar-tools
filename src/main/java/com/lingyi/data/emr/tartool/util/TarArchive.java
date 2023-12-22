@@ -1,9 +1,10 @@
 package com.lingyi.data.emr.tartool.util;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.spark.input.PortableDataStream;
 import org.apache.tools.tar.TarEntry;
 import org.apache.tools.tar.TarInputStream;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -102,4 +105,63 @@ public class TarArchive {
             }
         }
     }
+
+    public void sevenZ() throws IOException, URISyntaxException {
+        Pattern sonPathPattern = Pattern.compile(SON_PATH);
+        System.out.println(this.pds.getPath());
+        SeekableByteChannel seekableByteChannel = new SeekableByteChannel() {
+            @Override
+            public boolean isOpen() {
+                return false;
+            }
+
+            @Override
+            public void close() throws IOException {
+
+            }
+
+            @Override
+            public int read(ByteBuffer dst) throws IOException {
+                return 0;
+            }
+
+            @Override
+            public int write(ByteBuffer src) throws IOException {
+                return 0;
+            }
+
+            @Override
+            public long position() throws IOException {
+                return 0;
+            }
+
+            @Override
+            public SeekableByteChannel position(long newPosition) throws IOException {
+                return null;
+            }
+
+            @Override
+            public long size() throws IOException {
+                return 0;
+            }
+
+            @Override
+            public SeekableByteChannel truncate(long size) throws IOException {
+                return null;
+            }
+        };
+        seekableByteChannel.read(ByteBuffer.wrap(this.pds.toArray()));
+        long size = seekableByteChannel.size();
+        System.out.println(size);
+        SevenZFile sevenZFile = new SevenZFile(seekableByteChannel);
+        SevenZArchiveEntry nextEntry;
+        while ((nextEntry = sevenZFile.getNextEntry()) != null){
+            String name = nextEntry.getName();
+            System.out.println(name);
+        }
+
+
+    }
+
+
 }

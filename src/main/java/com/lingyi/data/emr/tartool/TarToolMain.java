@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
 
 /**
  * @Project：spark-unzfile
@@ -39,7 +38,7 @@ public class TarToolMain {
             System.err.println("Input parameter type: Absolute Path");
             return;
         }
-//        inputPath = "file:/D:/tar";
+//        inputPath = "file:/D:/typora_64bit_v1.4.8_setup.7z";
 
         FsClient fs = new FsClient();
         if(fs.isDirectory(inputPath)){
@@ -65,8 +64,8 @@ public class TarToolMain {
                     TarPlug tarPlug = new TarPlug(out, pds);
                     tarPlug.unZFile();
                 });
+                jsc.close();
                 System.out.println(String.format("解压完成[%s]: %s", System.currentTimeMillis(),outPath));
-
             }
 
         }else{
@@ -83,6 +82,7 @@ public class TarToolMain {
                 TarPlug tarPlug = new TarPlug(out, pds);
                 tarPlug.unZFile();
             });
+            jsc.close();
             System.out.println(String.format("解压完成[%s]: %s", System.currentTimeMillis(),outPath));
         }
 
