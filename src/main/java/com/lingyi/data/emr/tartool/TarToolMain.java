@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
+import java.util.zip.*;
 /**
  * @Project：spark-unzfile
  * @name：UnZFileMain
@@ -38,7 +38,7 @@ public class TarToolMain {
             System.err.println("Input parameter type: Absolute Path");
             return;
         }
-//        inputPath = "file:/D:/typora_64bit_v1.4.8_setup.7z";
+//        inputPath = "file:/D:/7z.7z";
 
         FsClient fs = new FsClient();
         if(fs.isDirectory(inputPath)){

@@ -1,23 +1,37 @@
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.utils.IOUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
-import org.apache.commons.compress.compressors.gzip.GzipUtils;
 
 public class testgz {
     public static void main(String[] args) throws IOException {
-        String gzFilePath = "D:\\zip.gz"; // 指定要解压的gzip文件路径
 
-        File file = new File(gzFilePath);
-        GzipCompressorInputStream inputStream = new GzipCompressorInputStream(new FileInputStream(file),true);
-        String compressedFilename = GzipUtils.getCompressedFilename(gzFilePath);
-        String uncompressedFilename = GzipUtils.getUncompressedFilename(gzFilePath);
-        boolean compressedFilename1 = GzipUtils.isCompressedFilename(gzFilePath);
-        System.out.println("filename: " + compressedFilename1);
+        String inputFile = "D:/7z.7z";
+        String outputDirectory = "D:/7z_out/";
+        SevenZFile sevenZFile = new SevenZFile(new File(inputFile));
+        SevenZArchiveEntry te;
 
+        while ((te = sevenZFile.getNextEntry()) != null) {
+            System.out.println(te.getName());
+            if (!te.isDirectory()) {
+                String fileNames = te.getName();
+                File outputFile = new File(outputDirectory, fileNames);
+                if (!outputFile.getParentFile().exists()) {
+                    outputFile.getParentFile().mkdirs();
+                }
+                byte[] b = new byte[(int) te.getSize()];
+                sevenZFile.read(b);
+//                InputStream inputStream = sevenZFile.getInputStream(te);
+//                IOUtils.copy(inputStream, new FileOutputStream(outputFile));
+                new FileOutputStream(outputFile).write(b);
+            }
 
+        }
 
     }
 }
