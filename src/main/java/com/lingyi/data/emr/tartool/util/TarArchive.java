@@ -1,17 +1,9 @@
 package com.lingyi.data.emr.tartool.util;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
-import org.apache.commons.compress.archivers.sevenz.SevenZFile;
-import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataInputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.spark.input.PortableDataStream;
 import org.apache.tools.tar.TarEntry;
 import org.apache.tools.tar.TarInputStream;
@@ -20,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.nio.channels.FileChannel;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -33,7 +24,7 @@ import java.util.zip.GZIPInputStream;
  */
 public class TarArchive {
     private static final Logger log = LoggerFactory.getLogger(TarArchive.class);
-    private static final String SON_PATH = "(/\\S+)";//匹配子路径
+    private static final String SON_PATH = "(/.*)";//匹配子路径
     PortableDataStream pds;
     String path;
 
@@ -123,11 +114,11 @@ public class TarArchive {
     }
 
 
-    public void unBz2() throws URISyntaxException, IOException {
+    public void unBz2() throws IOException {
         Pattern sonPathPattern = Pattern.compile(SON_PATH);
-        TarInputStream gz = new TarInputStream(new BZip2CompressorInputStream(new ByteArrayInputStream(this.pds.toArray())));
+        TarInputStream bz2In = new TarInputStream(new BZip2CompressorInputStream(new ByteArrayInputStream(this.pds.toArray())));
         TarEntry te;
-        while ((te = gz.getNextEntry()) != null) {
+        while ((te = bz2In.getNextEntry()) != null) {
             String sonPathStr = te.getName();
             Matcher sonPathMatcher = sonPathPattern.matcher(sonPathStr);
             if (sonPathMatcher.find() && te.getSize() > 0) {
@@ -136,9 +127,8 @@ public class TarArchive {
                 FsClient fsClient = new FsClient();
                 if (!fsClient.exists(outPutPath)) {
                     byte[] readBuf = new byte[(int) te.getSize()];
-                    gz.read(readBuf);
-//                    fsClient.write(outPutPath, readBuf);
-                    System.out.println(new String(readBuf));
+                    bz2In.read(readBuf);
+                    fsClient.write(outPutPath, readBuf);
                     System.out.println("解压到: " + outPutPath);
                 } else {
                     log.warn(String.format("你写入一个已存在的文件(%s)，是不允许的", outPutPath));

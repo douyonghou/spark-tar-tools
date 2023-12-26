@@ -11,6 +11,7 @@ import java.io.InputStream;
 public class testgz {
     public static void main(String[] args) throws IOException {
 
+
         String inputFile = "D:/7z.7z";
         String outputDirectory = "D:/7z_out/";
         SevenZFile sevenZFile = new SevenZFile(new File(inputFile));
