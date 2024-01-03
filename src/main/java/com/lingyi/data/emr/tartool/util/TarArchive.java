@@ -111,6 +111,9 @@ public class TarArchive {
 
         // 在本地解压写入hdfs
         WriteSevenZFile.write(inPutPath, outPutPath, new FsClient());
+
+        // 删除本地文件
+        WriteSevenZFile.delDisk(inPutPath);
     }
 
 

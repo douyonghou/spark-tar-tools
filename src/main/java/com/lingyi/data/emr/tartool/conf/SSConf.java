@@ -57,6 +57,8 @@ public class SSConf {
                 .config("spark.executor.memory", properConf.get("spark.executor.memory").toString())
                 .config("spark.executor.cores", properConf.get("spark.executor.cores").toString())
                 .config("spark.yarn.executor.memoryOverhead", properConf.get("spark.yarn.executor.memoryOverhead").toString())
+                .config("spark.executor.instances", properConf.get("spark.executor.instances").toString())
+                .config("spark.driver.cores", properConf.get("spark.driver.cores").toString())
                 .getOrCreate();
         // 加载udf函数
 //        spark.sql("CREATE TEMPORARY FUNCTION format_decoder AS 'com.lingyi.data.emr.unzfile'");
