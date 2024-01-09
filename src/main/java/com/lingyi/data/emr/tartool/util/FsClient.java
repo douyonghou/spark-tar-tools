@@ -77,16 +77,19 @@ public class FsClient {
         }
     }
 
-    public void appendWrite(String path, String readBuf) {
+    public void appendWrite(String path, byte[] readBuf) {
         Configuration conf = new Configuration();
         conf.set("fs.defaultFS", "tos://report/");
         Path writeHDFSPath = new Path(path);
         FileSystem fs = null;
         try {
             fs = FileSystem.get(new URI(path), conf);
-            fs.createNewFile(writeHDFSPath);
-            FSDataOutputStream out = fs.create(writeHDFSPath);
-            out.writeChars(readBuf);
+            if(!fs.exists(writeHDFSPath)){
+                fs.createNewFile(writeHDFSPath);
+            }
+            FSDataOutputStream out = fs.append(writeHDFSPath);
+
+            out.write(readBuf);
             out.flush();
             out.close();
             fs.close();

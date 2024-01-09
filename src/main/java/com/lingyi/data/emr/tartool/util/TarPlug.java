@@ -19,10 +19,17 @@ public class TarPlug {
     private static final String SON_PATH = "(/\\S+)";//匹配子路径
     PortableDataStream pds;
     String path;
+    String inputPath;
 
     public TarPlug(String path, PortableDataStream pds) {
         this.pds = pds;
         this.path = path;
+    }
+
+    public TarPlug(String path, PortableDataStream pds, String inputPath) {
+        this.pds = pds;
+        this.path = path;
+        this.inputPath = inputPath;
     }
 
     public void unZFile() throws IOException, URISyntaxException {
@@ -42,7 +49,7 @@ public class TarPlug {
             } catch (java.lang.StringIndexOutOfBoundsException e) {
                 System.out.println(e.getMessage());
             }
-            new TarArchive(this.path, this.pds).unGzip();
+            new TarArchive(this.path, this.pds, this.inputPath).unGzip();
         } else if (this.pds.getPath().endsWith(".tar")) {
             System.out.println("解压tar格式: " + this.path);
             try {
@@ -50,7 +57,7 @@ public class TarPlug {
             } catch (java.lang.StringIndexOutOfBoundsException e) {
                 System.out.println(e.getMessage());
             }
-            new TarArchive(this.path, this.pds).unTar();
+            new TarArchive(this.path, this.pds, this.inputPath).unTar();
         } else if (this.pds.getPath().endsWith(".bz2")) {
             System.out.println("解压bz2格式: " + this.path);
             try {

@@ -57,11 +57,12 @@ public class TarToolMain {
                 JavaPairRDD<String, PortableDataStream> binaryFiles = jsc.binaryFiles(inputPath);
                 String finalOutPath = outPath;
                 System.out.println(String.format("开始解压[%s]: %s", System.currentTimeMillis(), inputPath));
+                String finalInputPath1 = inputPath;
                 binaryFiles.foreach(x -> {
                     String path = x._1();
                     PortableDataStream pds = x._2();
                     String out = finalOutPath == null ? path : finalOutPath + "/" + inputPathSon;
-                    TarPlug tarPlug = new TarPlug(out, pds);
+                    TarPlug tarPlug = new TarPlug(out, pds, finalInputPath1);
                     tarPlug.unZFile();
                 });
                 jsc.close();
@@ -75,11 +76,12 @@ public class TarToolMain {
             JavaPairRDD<String, PortableDataStream> binaryFiles = jsc.binaryFiles(inputPath);
             String finalOutPath = outPath;
             System.out.println(String.format("开始解压[%s]: %s", System.currentTimeMillis(), inputPath));
+            String finalInputPath = inputPath;
             binaryFiles.foreach(x -> {
                 String path = x._1();
                 PortableDataStream pds = x._2();
                 String out = finalOutPath == null ? path : finalOutPath;
-                TarPlug tarPlug = new TarPlug(out, pds);
+                TarPlug tarPlug = new TarPlug(out, pds, finalInputPath);
                 tarPlug.unZFile();
             });
             jsc.close();
