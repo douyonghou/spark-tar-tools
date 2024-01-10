@@ -51,7 +51,8 @@ public class TarToolMain {
             while (listedFiles.hasNext()) {
                 LocatedFileStatus fileStatus = listedFiles.next();
                 inputPath = fileStatus.getPath().toString();
-                String inputPathSon = fileStatus.getPath().getName();
+//                String inputPathSon = fileStatus.getPath().getName().contains("\\.")? fileStatus.getPath().getName().split("\\.")[0]: fileStatus.getPath().getName();
+                String inputPathSon = fileStatus.getPath().getName().replaceAll("(\\.tar)|(\\.zip)|(\\.7z)|(\\.json)|(\\.jsonl)|(\\.tar)|(\\.gz)","");
                 SparkContext sc = new SSConf("produce", "sparkTarTool-" + jobid, jobid).setSs().sparkContext();
                 JavaSparkContext jsc = new JavaSparkContext(sc);
                 JavaPairRDD<String, PortableDataStream> binaryFiles = jsc.binaryFiles(inputPath);

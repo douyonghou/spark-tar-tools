@@ -1,9 +1,12 @@
-input_path="tos://report/data/spider/property/log_id=1001016/stat_date=20231213/WanJuan1.0/WanJuan1.0/raw/video/archives/archive_01*.tar"
-output_path="tos://report/data/spider/tmp_wj/log_id=1001016/stat_date=20231213/data_type=video/"
+cd /bin/spark-tar/
+
+input_path="tos://report/data/spider/property/log_id=1001016/stat_date=20231213/WanJuan1.0/WanJuan1.0/raw/nlp/CN/WebText-cn/"
+output_path="tos://report/data/tmp"
 spark-submit \
     --files ./config/wanjuan.produce.properties \
     --class com.lingyi.data.emr.tartool.TarToolMain \
     --master yarn \
-    ./spark-tar-tool-1.0.3-SNAPSHOT.jar $input_path $output_path wanjuan.produce.properties
+    ./spark-tar-tool-1.0.5-SNAPSHOT.jar $input_path $output_path wanjuan.produce.properties
 
-sparktar -client   wanjuan.produce.properties
+# 解压后验证是否都ok 文件大小为0
+hadoop fs -ls $output_path | awk -F " " '{if($5=="0")print $4,$5,$8}'

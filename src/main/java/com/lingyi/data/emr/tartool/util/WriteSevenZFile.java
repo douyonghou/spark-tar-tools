@@ -33,8 +33,6 @@ public class WriteSevenZFile {
                     if (!te.isDirectory() && !te.getName().endsWith("/")) {
                         String fileNames = te.getName().replaceAll("[!,=| ]", "");
                         int size = (int) te.getSize();
-                        ArrayList<Byte> bytes1 = new ArrayList<Byte>();
-                        System.out.println("解压文件大小:" + te.getSize() + "-------" + size);
                         if (size > 0) {
                             byte[] readB = new byte[size];
                             sevenZFile.read(readB);
@@ -42,34 +40,22 @@ public class WriteSevenZFile {
                             fsClient.write(writePath + "/" + fileNames, readB);
                             sevenZFile.close();
                             System.out.println("已写到tos路径下: " + writePath + "/" + fileNames);
-                        } else { // byte大小超过Integer.MAX_VALUE
-                            StringBuffer stringBuffer = new StringBuffer();
+                        } else {
                             long i = 0;
 
                             int read = sevenZFile.read();
                             while ((read = sevenZFile.read()) != -1) {
                                 i = 1024 * 1024 * 512 + i;
-                                if (!fsClient.exists(writePath + fileNames + "_" + i)) {
+                                writePath = writePath + "_" + fileNames + "_" + System.currentTimeMillis();
+                                if (!fsClient.exists(writePath)) {
                                     byte[] readBuf = new byte[(int) (1024 * 1024 * 512)];
                                     read = sevenZFile.read(readBuf);
-                                    fsClient.write(writePath + fileNames + "_" + i, readBuf);
-                                    System.out.println("解压到: " + writePath + fileNames);
+                                    fsClient.write(writePath, readBuf);
+                                    System.out.println("解压到: " + writePath);
                                 } else {
-                                    System.out.println(String.format("你写入一个已存在的文件(%s)，是不允许的", writePath + fileNames));
+                                    System.out.println(String.format("你写入一个已存在的文件(%s)，是不允许的", writePath));
                                 }
                             }
-                        /*while ((read = sevenZFile.read()) != -1) {
-                            stringBuffer = stringBuffer.append((char) read);
-                            i++;
-
-                            if (i >= (1024 * 1024 * 128) && i % (1024 * 1024 * 128) == 0) {
-                                System.out.println("i--------------------=========" + i);
-                                String readBStr = stringBuffer.toString();
-                                fsClient.appendWrite(writePath + fileNames + "_" + i, readBStr);
-                                stringBuffer.delete(0, stringBuffer.length());
-                                stringBuffer = new StringBuffer();
-                            }
-                        }*/
                             sevenZFile.close();
                             System.out.println("已写到tos路径下: " + writePath + "/" + fileNames);
                         }
@@ -87,13 +73,14 @@ public class WriteSevenZFile {
                         while ((bytesRead = sevenZFile.read(buffer)) > 0) {
                             // 处理每个文件内容（这里只打印了文件名）
                             i = 1024 * 1024 * 512 + i;
-                            if (!fsClient.exists(writePath + fileNames + "_" + i)) {
+                            writePath = writePath + "_" + fileNames + "_" + System.currentTimeMillis();
+                            if (!fsClient.exists(writePath)) {
                                 byte[] readBuf = new byte[(int) (1024 * 1024 * 512)];
                                 sevenZFile.read(readBuf);
-                                fsClient.write(writePath + fileNames + "_" + i, readBuf);
-                                System.out.println("解压到: " + writePath + fileNames);
+                                fsClient.write(writePath, readBuf);
+                                System.out.println("解压到: " + writePath);
                             } else {
-                                System.out.println(String.format("你写入一个已存在的文件(%s)，是不允许的", writePath + fileNames));
+                                System.out.println(String.format("你写入一个已存在的文件(%s)，是不允许的", writePath));
                             }
                         }
                     }

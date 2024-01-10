@@ -49,9 +49,8 @@ public class TarArchive {
         while ((read = gis.read()) != -1) {
             i = 1024 * 1024 * 512 + i;
             String sonPathMatcher = gis.getMetaData().getFilename();
+            String outPutPath = path + "_" + sonPathMatcher + "_" + System.currentTimeMillis();
             System.out.println("_______sonPathMatcher______" + sonPathMatcher);
-            String outPutPath = path + "/" + sonPathMatcher + "_" + i;
-
             if (!fsClient.exists(outPutPath)) {
                 byte[] readBuf = new byte[(int) (1024 * 1024 * 512)];
 
@@ -99,33 +98,23 @@ public class TarArchive {
             String sonPathStr = nze.getName();
             System.out.println("----sonPathStr----" + sonPathStr);
             if (nze.getSize() > 0) {
-                String outPutPath = path + sonPathStr;
+                String outPutPath = path + "_" + sonPathStr;
                 System.out.println("----outPutPath----" + outPutPath);
                 FsClient fsClient = new FsClient();
                 long i = 0;
                 int read = 0;
                 while ((read = tarIn.read()) != -1) {
                     i = 1024 * 1024 * 512 + i;
-                    if (!fsClient.exists(outPutPath + "_" + i)) {
+                    outPutPath = outPutPath + "_" + System.currentTimeMillis();
+                    if (!fsClient.exists(outPutPath)) {
                         byte[] readBuf = new byte[(int) (1024 * 1024 * 512)];
                         read = tarIn.read(readBuf);
-                        fsClient.write(outPutPath + "_" + i, readBuf);
+                        fsClient.write(outPutPath, readBuf);
                         System.out.println("解压到: " + outPutPath);
                     } else {
-                        log.warn(String.format("你写入一个已存在的文件(%s)，是不允许的", outPutPath + "_" + i));
+                        log.warn(String.format("你写入一个已存在的文件(%s)，是不允许的", outPutPath));
                     }
                 }
-               /*TarArchiveInputStream tarIn = new TarArchiveInputStream(new ByteArrayInputStream(this.pds.toArray()), "UTF-8");
-                Matcher sonPathMatcher = sonPathPattern.matcher(sonPathStr); sonPathMatcher.find()
-                sonPathStr = sonPathMatcher.group(0);
-                if (!fsClient.exists(outPutPath)) {
-                    byte[] readBuf = new byte[(int) nze.getSize()];
-                    tarIn.read(readBuf);
-                    fsClient.write(outPutPath, readBuf);
-                    System.out.println("解压到: " + outPutPath);
-                } else {
-                    log.warn(String.format("你写入一个已存在的文件(%s)，是不允许的", outPutPath));
-                }*/
             }
         }
 
@@ -134,10 +123,10 @@ public class TarArchive {
     public void sevenZ() throws IOException, URISyntaxException {
         String inPutPath = this.pds.getPath();
         String outPutPath = path;
-        // 先下载
+        // 写磁盘
         WriteSevenZFile.down(inPutPath, new FsClient());
 
-        // 在本地解压写入hdfs
+        // 解压磁盘文件写入hdfs
         try {
             WriteSevenZFile.write(inPutPath, outPutPath, new FsClient());
         } catch (NullPointerException e) {
@@ -145,8 +134,7 @@ public class TarArchive {
             throw new RuntimeException(e);
         }
 
-
-        // 删除本地文件
+        // 删除磁盘文件
         WriteSevenZFile.delDisk(inPutPath);
     }
 
