@@ -46,14 +46,14 @@ public class WriteSevenZFile {
                             int read = sevenZFile.read();
                             while ((read = sevenZFile.read()) != -1) {
                                 i = 1024 * 1024 * 512 + i;
-                                writePath = writePath + "_" + fileNames + "_" + System.currentTimeMillis();
+//                                writePath = writePath + "_" + fileNames + "_" + System.currentTimeMillis();
                                 if (!fsClient.exists(writePath)) {
                                     byte[] readBuf = new byte[(int) (1024 * 1024 * 512)];
                                     read = sevenZFile.read(readBuf);
                                     fsClient.write(writePath, readBuf);
                                     System.out.println("解压到: " + writePath);
                                 } else {
-                                    System.out.println(String.format("你写入一个已存在的文件(%s)，是不允许的", writePath));
+                                    System.out.println(String.format("你写入一个已存在的文件(%s)，是不允许的", writePath + "_" + fileNames + "_" + System.currentTimeMillis()));
                                 }
                             }
                             sevenZFile.close();

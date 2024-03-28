@@ -105,11 +105,12 @@ public class FsClient {
             String defaultFSPath = "tos://ml-a100";
             Configuration conf = new Configuration();
             // 需要指定capy到目标用的根路径，也就是tos的桶
-            String defaultFS = "^([0-9|a-z|A_Z|\\:]+\\://[0-9|a-z|A_Z|\\:]+)/";
+//            String defaultFS = "^([0-9|a-z|A_Z|\\:]+\\://[0-9|a-z|A_Z|\\:]+)/";
+            String defaultFS = "^tos://(\\S+)/";
             Pattern defaultFSP = Pattern.compile(defaultFS);
             Matcher matcher = defaultFSP.matcher(inPath);
             if(matcher.find()){
-                defaultFSPath = matcher.group(1);
+                defaultFSPath = "tos://"+matcher.group(1);
             }
             conf.set("fs.defaultFS",defaultFSPath);
             Path writeOutPath = new Path(outPath);

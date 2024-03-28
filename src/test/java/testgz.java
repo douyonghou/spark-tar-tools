@@ -1,19 +1,25 @@
-import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
-import org.apache.commons.compress.archivers.sevenz.SevenZFile;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class testgz {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+        String defaultFSPath = "tos://ml-a100";
+        Configuration conf = new Configuration();
+        // 需要指定capy到目标用的根路径，也就是tos的桶
+        String defaultFS = "^tos://(\\S+)/";
+        Pattern defaultFSP = Pattern.compile(defaultFS);
+        Matcher matcher = defaultFSP.matcher("tos://spider-tos-sts/");
+        if(matcher.find()){
+            defaultFSPath = "tos://"+matcher.group(1);
 
-
-        String s = "fdsfsa.tarfdsfa".replaceAll("(\\.tar)|(\\.zip)|(\\.7z)|(\\.json)|(\\.jsonl)|(\\.tar)|(\\.gz)", "");
-        System.out.println(s);
+        }
+        System.out.println(defaultFSPath+"---------");
 
     }
 }
