@@ -77,6 +77,25 @@ public class FsClient {
         }
     }
 
+    public void writeSb(String path, String readBuf, String lastStr) {
+        Configuration conf = new Configuration();
+        Path writeHDFSPath = new Path(path);
+        FileSystem fs = null;
+        try {
+            fs = FileSystem.get(new URI(path), conf);
+            fs.createNewFile(writeHDFSPath);
+            FSDataOutputStream out = fs.create(writeHDFSPath);
+            out.write((lastStr + readBuf).getBytes());
+            out.flush();
+            out.close();
+            fs.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void appendWrite(String path, byte[] readBuf) {
         Configuration conf = new Configuration();
         conf.set("fs.defaultFS", "tos://report/");

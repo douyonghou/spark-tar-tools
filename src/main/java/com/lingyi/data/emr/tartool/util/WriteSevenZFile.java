@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,7 +28,7 @@ public class WriteSevenZFile {
             AtomicInteger k = new AtomicInteger();
             sevenZFile.getEntries().forEach(x -> k.set(k.get() + 1));
             System.out.println(k);
-            if(k.get()==1){
+            if (k.get() == 1) {
                 while ((te = sevenZFile.getNextEntry()) != null) {
                     System.out.println(te.getName());
                     if (!te.isDirectory() && !te.getName().endsWith("/")) {
@@ -41,31 +42,50 @@ public class WriteSevenZFile {
                             sevenZFile.close();
                             System.out.println("已写到tos路径下: " + writePath + "/" + fileNames);
                         } else {
-                            long i = 0;
-
-                            int read = sevenZFile.read();
-                            while ((read = sevenZFile.read()) != -1) {
-                                i = 1024 * 1024 * 512 + i;
-//                                writePath = writePath + "_" + fileNames + "_" + System.currentTimeMillis();
+                            String t = writePath;
+                            String lastLine = "";
+                            int read;
+                            int addK1=0;
+                            int addK2=0;
+                            do {
+                                writePath = t + "/" + fileNames + "_" + System.currentTimeMillis();
                                 if (!fsClient.exists(writePath)) {
-                                    byte[] readBuf = new byte[(int) (1024 * 1024 * 512)];
-                                    read = sevenZFile.read(readBuf);
-                                    fsClient.write(writePath, readBuf);
-                                    System.out.println("解压到: " + writePath);
+                                    byte[] readBuf = new byte[(int) (1024 * 1024 * 1024)];
+                                    sevenZFile.read(readBuf);
+//                                    fsClient.write(writePath,readBuf);
+                                    String str = new String(readBuf, Charset.forName("UTF-8"));
+                                    // 找到最后一个换行符的位置
+                                    int lastIndex;
+                                    if ((lastIndex = str.lastIndexOf('\n')) != -1) {
+                                        fsClient.writeSb(writePath, str.substring(0, lastIndex), lastLine);
+                                        lastLine = str.substring(lastIndex + addK1);
+                                    } else if((lastIndex = str.lastIndexOf("\r\n")) != -1){
+                                        lastLine = str.substring(lastIndex + addK2);
+                                        lastLine = str.substring(0, lastIndex);
+                                    } else if ((lastIndex = str.lastIndexOf("\r")) != -1) {
+                                        fsClient.writeSb(writePath, str.substring(0, lastIndex), lastLine);
+                                        lastLine = str.substring(lastIndex + addK1);
+                                    } else {
+                                        fsClient.writeSb(writePath, str, lastLine);
+                                        lastLine = "";
+
+                                    }
+                                    addK1=1;
+                                    addK2=2;
                                 } else {
-                                    System.out.println(String.format("你写入一个已存在的文件(%s)，是不允许的", writePath + "_" + fileNames + "_" + System.currentTimeMillis()));
+                                    System.out.println(String.format("你写入一个已存在的文件(%s)，是不允许的", writePath));
                                 }
-                            }
+                            }  while ((read = sevenZFile.read()) != -1);
                             sevenZFile.close();
                             System.out.println("已写到tos路径下: " + writePath + "/" + fileNames);
                         }
                     }
 
                 }
-            }else { // 7z包下有多个文件的时候
+            } else { // 7z包下有多个文件的时候
                 while ((te = sevenZFile.getNextEntry()) != null) {
                     if (!te.isDirectory() && !te.getName().endsWith("/")) {
-                        byte[] buffer = new byte[1024*1024*512];
+                        byte[] buffer = new byte[1024 * 1024 * 512];
                         String fileNames = te.getName().replaceAll("[!,=| ]", "");
                         System.out.println("Extracted file: " + fileNames);
                         int bytesRead;
