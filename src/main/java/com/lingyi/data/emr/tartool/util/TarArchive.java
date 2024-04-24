@@ -64,7 +64,7 @@ public class TarArchive {
                 fsClient.write(outPutPath, readBuf);
 //                System.out.println("解压到: " + outPutPath);
             } else {
-                String format = String.format("你写入一个已存在的文件(%s)，是不允许的", outPutPath);
+                String format = String.format("You write an existing file(%s), It is not allowed", outPutPath);
                 log.error(format);
             }
         }
@@ -104,7 +104,7 @@ public class TarArchive {
                         fsClient.write(outPutPath, readBuf);
 //                        System.out.println("解压到: " + outPutPath);
                     } else {
-                        log.error(String.format("你写入一个已存在的文件(%s)，是不允许的", outPutPath));
+                        log.error(String.format("You write an existing file(%s), It is not allowed", outPutPath));
                     }
                 }
             }
@@ -148,7 +148,7 @@ public class TarArchive {
                     fsClient.write(outPutPath, readBuf);
 //                    System.out.println("解压到: " + outPutPath);
                 } else {
-                    log.error(String.format("你写入一个已存在的文件(%s)，是不允许的", outPutPath));
+                    log.error(String.format("You write an existing file(%s), It is not allowed", outPutPath));
                 }
             }
         }
