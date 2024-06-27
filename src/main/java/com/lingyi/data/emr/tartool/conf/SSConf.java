@@ -43,8 +43,8 @@ public class SSConf {
                 .builder()
                 .master("local[*]")
                 .appName(appName)
-                .config("spark.driver.log.file","hdfs:///tmp/log/"+jobid+"_"+System.currentTimeMillis()+"driver.log")
-                .config("spark.executor.log.file","hdfs:///tmp/log/"+jobid+"_"+System.currentTimeMillis()+"executor.log")
+//                .config("spark.driver.log.file","hdfs:///tmp/log/"+jobid+"_"+System.currentTimeMillis()+"driver.log")
+//                .config("spark.executor.log.file","hdfs:///tmp/log/"+jobid+"_"+System.currentTimeMillis()+"executor.log")
                 .getOrCreate();
         // 加载udf函数
 //        spark.sql("CREATE TEMPORARY FUNCTION format_decoder AS 'com.litb.udf.FormatDecoder'");

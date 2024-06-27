@@ -20,35 +20,42 @@ public class TarPlug {
     PortableDataStream pds;
     String path;
     String inputPath;
+    String zstDP;
+    String localFileP;
 
     public TarPlug(String path, PortableDataStream pds) {
         this.pds = pds;
         this.path = path;
     }
 
-    public TarPlug(String path, PortableDataStream pds, String inputPath) {
+    public TarPlug(String path, PortableDataStream pds, String inputPath, String zstDP, String localFileP) {
         this.pds = pds;
         this.path = path;
         this.inputPath = inputPath;
+        this.zstDP = zstDP;
+        this.localFileP = localFileP;
     }
 
     public void unZFile() throws IOException, URISyntaxException {
 
         if (this.pds.getPath().endsWith(".zip")) {
-            System.out.println("解压zip格式: " + this.path);
+            System.out.println("decompression zip format: " + this.path);
             new TarArchive(this.path, this.pds).unZip();
-        } else if (this.pds.getPath().endsWith(".gz")) {
-            System.out.println("解压gzip格式: " + this.path);
-            new TarArchive(this.path, this.pds, this.inputPath).unGzip();
+        } else if (this.pds.getPath().endsWith(".warc.gz")) {
+            System.out.println("decompression gzip format: " + this.path);
+            new TarArchive(this.path, this.pds, this.inputPath).unWarcGzip();
         } else if (this.pds.getPath().endsWith(".tar")) {
-            System.out.println("解压tar格式: " + this.path);
+            System.out.println("decompression tar format: " + this.path);
             new TarArchive(this.path, this.pds, this.inputPath).unTar();
         } else if (this.pds.getPath().endsWith(".bz2")) {
-            System.out.println("解压bz2格式: " + this.path);
+            System.out.println("decompression bz2 format: " + this.path);
             new TarArchive(this.path, this.pds).unBz2();
         } else if (this.pds.getPath().endsWith(".7z")) {
-            System.out.println("解压7z格式: " + this.path);
+            System.out.println("decompression 7z format: " + this.path);
             new TarArchive(this.path, this.pds).sevenZ();
-        } else System.out.println("该格式目前不支持，只支持tar/gz/zip压缩格式");
+        } else if (this.pds.getPath().endsWith(".zst")) {
+            System.out.println("decompression zst format: " + this.path);
+            new TarArchive(this.path, this.pds).unZst(this.zstDP, this.localFileP);
+        }else System.out.println("Changing format currently does not support decompression，Only tarOnly supports: tar/gz/zip/zst/7z");
     }
 }

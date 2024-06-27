@@ -77,6 +77,21 @@ public class FsClient {
         }
     }
 
+    public void del(String path) {
+        Configuration conf = new Configuration();
+        Path writeHDFSPath = new Path(path);
+        FileSystem fs = null;
+        try {
+            fs = FileSystem.get(new URI(path), conf);
+            fs.delete(writeHDFSPath,true);
+            fs.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void writeSb(String path, String readBuf, String lastStr) {
         Configuration conf = new Configuration();
         Path writeHDFSPath = new Path(path);

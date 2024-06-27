@@ -2,7 +2,9 @@ package com.lingyi.data.emr.tartool;
 
 import com.lingyi.data.emr.tartool.conf.SSConf;
 import com.lingyi.data.emr.tartool.util.FsClient;
+import com.lingyi.data.emr.tartool.util.MyOptionsU;
 import com.lingyi.data.emr.tartool.util.TarPlug;
+import org.apache.commons.cli.Options;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.mapreduce.lib.input.InvalidInputException;
@@ -16,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.zip.*;
 
 /**
  * @Project：spark-unzfile
@@ -26,13 +27,40 @@ import java.util.zip.*;
  */
 public class TarToolMain {
     private static final Logger log = LoggerFactory.getLogger(TarToolMain.class);
+    public static String[]  customArgs = null;
 
+    private static String[] preprocessCommandLineArgs(String[] args) {
+        // 在这里对args进行一些预处理，比如过滤、转换等
+        // 然后返回处理后的String数组
+        // 注意：这里只是示例，你可能需要根据实际需求来实现这个方法
+        return args; // 或者返回处理后的新数组
+    }
     public static void main(String[] args) throws IOException, URISyntaxException {
+        customArgs = args;
+        MyOptionsU.getStr();
+
+        String inputPath = MyOptionsU.inputPath;
+        String outPath = MyOptionsU.outPath;
+        String jobid = MyOptionsU.jobid;
+        String zstDP = MyOptionsU.zStr;
+        String localFileP = MyOptionsU.localFileP;
+
+        System.out.println(inputPath);
+        System.out.println(outPath);
+        System.out.println(jobid);
+
+        System.out.println(inputPath+"----"+outPath+"----"+jobid);
+        if (jobid.isEmpty() || outPath.isEmpty() ||  inputPath.isEmpty()) {
+            System.err.println("Input parameter type: Absolute Path");
+            return;
+        }
+
+/*
 
         String inputPath = "";
         String outPath = null;
         String jobid = "produce.properties";
-        if (args.length <= 3 && args.length >= 2) {
+        if (args.length <= 5 && args.length >= 4) {
             inputPath = args[0];
             outPath = args.length == 3 ? args[1] : null;
             jobid = args.length == 3 ? args[2] : args[1];
@@ -41,12 +69,14 @@ public class TarToolMain {
             System.err.println("Input parameter type: Absolute Path");
             return;
         }
+*/
+
 //        inputPath = "file:/D:/zip/14506541.zip";
 
         FsClient fs = new FsClient();
 
         if (fs.isDirectory(inputPath)) {
-            System.out.println("是一个目录");
+            System.out.println("It's a directory");
             Configuration conf = new Configuration();
             Path pathExists = new Path(inputPath);
             FileSystem fs1 = FileSystem.get(new URI(inputPath), conf);
@@ -62,7 +92,7 @@ public class TarToolMain {
 //                LocatedFileStatus fileStatus = listedFiles.next();
                     inputPath = fileStatus.getPath().toString();
                     if (fs.isDirectory(inputPath)) {
-                        System.out.println(String.format("[%s]是一个路径，不进行直接解压路径", inputPath));
+                        System.out.println(String.format("[%s]It is a path, do not directly decompress the path", inputPath));
                         continue;
                     }
 //                String inputPathSon = fileStatus.getPath().getName().contains("\\.")? fileStatus.getPath().getName().split("\\.")[0]: fileStatus.getPath().getName();
@@ -73,20 +103,20 @@ public class TarToolMain {
 
                     JavaPairRDD<String, PortableDataStream> binaryFiles = jsc.binaryFiles(inputPath);
                     String finalOutPath = outPath;
-                    System.out.println(String.format("开始解压[%s]: %s", System.currentTimeMillis(), inputPath));
+                    System.out.println(String.format("Start decompressing[%s]: %s", System.currentTimeMillis(), inputPath));
                     String finalInputPath1 = inputPath;
 
                     binaryFiles.foreach(x -> {
                         String path = x._1();
                         PortableDataStream pds = x._2();
                         String out = finalOutPath == null ? path : finalOutPath + "/" + inputPathSon;
-                        TarPlug tarPlug = new TarPlug(out, pds, finalInputPath1);
+                        TarPlug tarPlug = new TarPlug(out, pds, finalInputPath1, zstDP, localFileP);
                         tarPlug.unZFile();
                     });
 
 
                     jsc.close();
-                    System.out.println(String.format("解压完成[%s]: %s", System.currentTimeMillis(), outPath));
+                    System.out.println(String.format("Decompression completed[%s]: %s", System.currentTimeMillis(), outPath));
                 }
             } catch (InvalidInputException e) {
                 System.out.println(e.getMessage());
@@ -94,23 +124,23 @@ public class TarToolMain {
 
         } else {
             try {
-                System.out.println("是一个文件");
+                System.out.println("It's a file");
 
                 SparkContext sc = new SSConf("produce", "sparkTarTool-" + jobid, jobid).setSs().sparkContext();
                 JavaSparkContext jsc = new JavaSparkContext(sc);
                 JavaPairRDD<String, PortableDataStream> binaryFiles = jsc.binaryFiles(inputPath);
                 String finalOutPath = outPath;
-                System.out.println(String.format("开始解压[%s]: %s", System.currentTimeMillis(), inputPath));
+                System.out.println(String.format("Start decompressing[%s]: %s", System.currentTimeMillis(), inputPath));
                 String finalInputPath = inputPath;
                 binaryFiles.foreach(x -> {
                     String path = x._1();
                     PortableDataStream pds = x._2();
                     String out = finalOutPath == null ? path : finalOutPath;
-                    TarPlug tarPlug = new TarPlug(out, pds, finalInputPath);
+                    TarPlug tarPlug = new TarPlug(out, pds, finalInputPath,zstDP,localFileP);
                     tarPlug.unZFile();
                 });
                 jsc.close();
-                System.out.println(String.format("解压完成[%s]: %s", System.currentTimeMillis(), outPath));
+                System.out.println(String.format("Decompression completed[%s]: %s", System.currentTimeMillis(), outPath));
             } catch (InvalidInputException e) {
                 System.out.println(e.getMessage());
             }

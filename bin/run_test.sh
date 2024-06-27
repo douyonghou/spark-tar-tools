@@ -17,6 +17,8 @@ output_path="tos://report/data/tmp"
 spark-submit \
     --files ./config/wanjuan.produce.properties \
     --class com.lingyi.data.emr.tartool.TarToolMain \
+    --conf "spark.driver.extraJavaOptions=-Dfile.encoding=UTF-8" \
+    --conf "spark.executor.extraJavaOptions=-Dfile.encoding=UTF-8" \
     --master yarn \
     ./spark-tar-tool-1.0.8.1-SNAPSHOT.jar $input_path $output_path wanjuan.produce.properties
 
