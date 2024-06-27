@@ -38,7 +38,7 @@ b)还可以指定解压输出路径
 
 #### 3.1操作命令
 
-目前已在172.24.12.118机器配置好了，可通过 sparktar 命令来执行解压操作
+目前已在172.xxx.xxx.xxx机器配置好了，可通过 sparktar 命令来执行解压操作
 sparktar -cluster tos://report/tmp/tar/ tos://report/tmptar/ tmp.produce.properties
 
 #### 3.2命令说明
